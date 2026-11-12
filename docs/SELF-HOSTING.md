@@ -15,7 +15,7 @@ or installation.
 ### Install
 
 ```bash
-git clone https://github.com/YOUR-ACCOUNT/webetu-resto.git
+git clone https://github.com/HAROUNTOUM/webetu-resto.git
 cd webetu-resto
 docker compose run --rm webetu setup
 docker compose up -d
@@ -76,7 +76,7 @@ daylight saving time. If you change `WEBETU_TIMEZONE`, also change `TZ` in
 
 ```bash
 sudo useradd --system --create-home --home-dir /opt/webetu-resto webetu
-sudo -u webetu git clone https://github.com/YOUR-ACCOUNT/webetu-resto.git /opt/webetu-resto
+sudo -u webetu git clone https://github.com/HAROUNTOUM/webetu-resto.git /opt/webetu-resto
 cd /opt/webetu-resto
 sudo -u webetu python3 -m venv .venv
 sudo -u webetu .venv/bin/pip install .
@@ -107,6 +107,24 @@ one-shot pass instead:
 
 Use `--yes` only in a non-interactive context. The command is idempotent: a
 second pass on the same day books nothing new.
+
+## Option D — GitHub Actions (no computer needed)
+
+Run the booking on GitHub's servers so it works even when your own machine is
+off for days.
+
+1. Create a **private** repository and push this project to it.
+2. In *Settings → Secrets and variables → Actions*, add the secrets
+   `WEBETU_USERNAME`, `WEBETU_PASSWORD` and `WEBETU_RESTO_ID`.
+3. The workflow [`.github/workflows/reserve.yml`](../.github/workflows/reserve.yml)
+   runs at 00:05 and 06:05 Algiers time. Without the secrets it is skipped.
+4. Test it once: *Actions → Daily reservation → Run workflow* (tick `dry_run` to
+   simulate). A failed run emails you.
+
+Notes: GitHub's servers are outside Algeria, so check that the first manual run
+succeeds. Scheduled runs can start 10–30 minutes late, which is harmless because
+tomorrow's breakfast is still more than 24 hours away at 00:05. Keep the
+repository private: public workflow logs are visible to everyone.
 
 ## Configuration reference
 

@@ -27,7 +27,7 @@ Africa/Algiers run fills that window, so tomorrow's breakfast is always more tha
 ## Quick start (Docker)
 
 ```bash
-git clone https://github.com/YOUR-ACCOUNT/webetu-resto.git
+git clone https://github.com/HAROUNTOUM/webetu-resto.git
 cd webetu-resto
 docker compose run --rm webetu setup
 docker compose up -d
@@ -44,7 +44,7 @@ command prompts for them on first connection (interactive terminal).
 ## Without Docker
 
 ```bash
-git clone https://github.com/YOUR-ACCOUNT/webetu-resto.git
+git clone https://github.com/HAROUNTOUM/webetu-resto.git
 cd webetu-resto
 python3 -m venv .venv
 .venv/bin/pip install .

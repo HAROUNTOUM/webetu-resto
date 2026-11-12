@@ -20,7 +20,7 @@ small changes, clear tests, no unnecessary dependencies.
 Requires Python 3.11+ and [uv](https://docs.astral.sh/uv/) (or plain `pip`).
 
 ```bash
-git clone https://github.com/YOUR-ACCOUNT/webetu-resto.git
+git clone https://github.com/HAROUNTOUM/webetu-resto.git
 cd webetu-resto
 uv venv --python 3.12
 uv pip install -e ".[dev]"

@@ -1,6 +1,6 @@
 [Unit]
 Description=webetu-resto daily ONOU meal reservations
-Documentation=https://github.com/YOUR-ACCOUNT/webetu-resto
+Documentation=https://github.com/HAROUNTOUM/webetu-resto
 After=network-online.target
 Wants=network-online.target
 

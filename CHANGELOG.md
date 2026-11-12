@@ -11,6 +11,7 @@ All notable changes to this project are documented here. The format follows
 - Daemon auto-check: re-runs the idempotent pass every
   `WEBETU_CHECK_INTERVAL_MINUTES` (default 60) and retries failed passes with
   backoff (`WEBETU_MAX_RETRIES`, `WEBETU_RETRY_DELAY`).
+- GitHub Actions workflow for scheduled booking without an always-on machine.
 - First-connection prompt: any command asks for matricule and password when
   `.env` has no credentials (interactive terminal only).
 - Resto requests are retried (freshly signed) on intermittent 401/403.
@@ -46,4 +47,4 @@ All notable changes to this project are documented here. The format follows
 - No credentials, JWTs or tokens are logged; error messages stay generic.
 - No public multi-user instance: self-hosting only.
 
-[0.1.0]: https://github.com/YOUR-ACCOUNT/webetu-resto/releases/tag/v0.1.0
+[0.1.0]: https://github.com/HAROUNTOUM/webetu-resto/releases/tag/v0.1.0

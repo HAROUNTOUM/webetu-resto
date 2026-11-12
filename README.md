@@ -39,7 +39,7 @@ les oublis, les redémarrages et les réservations annulées.
 ### 1. Installer
 
 ```bash
-git clone https://github.com/TON-COMPTE/webetu-resto.git
+git clone https://github.com/HAROUNTOUM/webetu-resto.git
 cd webetu-resto
 docker compose run --rm webetu setup
 docker compose up -d
@@ -68,7 +68,7 @@ demande à la première connexion (terminal interactif).
 ## Installation sans Docker
 
 ```bash
-git clone https://github.com/TON-COMPTE/webetu-resto.git
+git clone https://github.com/HAROUNTOUM/webetu-resto.git
 cd webetu-resto
 python3 -m venv .venv
 .venv/bin/pip install .

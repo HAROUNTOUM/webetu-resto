@@ -103,3 +103,12 @@ def test_paths_and_booleans_from_env(monkeypatch: pytest.MonkeyPatch) -> None:
     assert settings.webetu_state_path == Path("/tmp/custom.json")
     assert settings.webetu_dry_run is True
     assert settings.webetu_max_retries == 5
+
+
+def test_empty_env_values_are_ignored(monkeypatch: pytest.MonkeyPatch) -> None:
+    # GitHub Actions passes unset secrets as empty strings.
+    monkeypatch.setenv("WEBETU_RESTO_ID", "")
+    monkeypatch.setenv("WEBETU_RUN_AT", "")
+    settings = Settings(_env_file=None)
+    assert settings.webetu_resto_id is None
+    assert settings.webetu_run_at == "00:05"

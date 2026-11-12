@@ -1,0 +1,73 @@
+name: Daily reservation
+
+# Runs the idempotent booking pass on GitHub's servers, so no computer of yours
+# needs to stay on. Use a PRIVATE copy of the repository and add the secrets
+# below (Settings -> Secrets and variables -> Actions). Without the secrets the
+# job is skipped, so a public copy stays harmless.
+#
+# Algiers is UTC+1 all year, so 23:05 UTC = 00:05 Algiers. The second entry is a
+# few hours later and only fills gaps (the pass never books twice).
+
+on:
+  schedule:
+    - cron: "5 23 * * *"
+    - cron: "5 5 * * *"
+  workflow_dispatch:
+    inputs:
+      dry_run:
+        description: "Simulate only (nothing is booked)"
+        type: boolean
+        default: false
+
+permissions:
+  contents: read
+
+concurrency:
+  group: reserve
+  cancel-in-progress: false
+
+jobs:
+  reserve:
+    name: Book missing meals
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    env:
+      WEBETU_USERNAME: ${{ secrets.WEBETU_USERNAME }}
+      WEBETU_PASSWORD: ${{ secrets.WEBETU_PASSWORD }}
+      WEBETU_RESTO_ID: ${{ secrets.WEBETU_RESTO_ID }}
+      WEBETU_DRY_RUN: ${{ inputs.dry_run && 'true' || 'false' }}
+      WEBETU_REQUEST_INTERVAL: "0.5"
+    steps:
+      - name: Check secrets are configured
+        id: guard
+        run: |
+          if [ -z "$WEBETU_USERNAME" ] || [ -z "$WEBETU_PASSWORD" ]; then
+            echo "WEBETU_USERNAME / WEBETU_PASSWORD secrets are missing: skipping."
+            echo "run=false" >> "$GITHUB_OUTPUT"
+          else
+            echo "run=true" >> "$GITHUB_OUTPUT"
+          fi
+
+      - uses: actions/checkout@v4
+        if: steps.guard.outputs.run == 'true'
+
+      - uses: actions/setup-python@v5
+        if: steps.guard.outputs.run == 'true'
+        with:
+          python-version: "3.12"
+          cache: pip
+          cache-dependency-path: pyproject.toml
+
+      - name: Install
+        if: steps.guard.outputs.run == 'true'
+        run: |
+          python -m pip install --upgrade pip
+          pip install .
+
+      - name: Connection check (no booking)
+        if: steps.guard.outputs.run == 'true'
+        run: webtu test
+
+      - name: Book missing meals
+        if: steps.guard.outputs.run == 'true'
+        run: webtu reserve --yes
