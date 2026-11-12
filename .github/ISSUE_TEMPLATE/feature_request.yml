@@ -1,0 +1,37 @@
+name: Feature request
+description: Suggest an improvement (keep the self-hosted, single-user model)
+title: "[feature] "
+labels: ["enhancement"]
+body:
+  - type: textarea
+    id: problem
+    attributes:
+      label: Problem
+      description: What is painful today? Who does it affect?
+    validations:
+      required: true
+
+  - type: textarea
+    id: proposal
+    attributes:
+      label: Proposed solution
+      description: Keep it compatible with the self-hosted, one-account-per-instance design.
+    validations:
+      required: true
+
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Alternatives considered
+    validations:
+      required: false
+
+  - type: checkboxes
+    id: scope
+    attributes:
+      label: Scope
+      options:
+        - label: This does not require a public multi-user instance.
+          required: true
+        - label: This does not bypass quotas, the 24 h rule or the reservation window.
+          required: true

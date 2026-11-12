@@ -1,0 +1,42 @@
+# Secrets - never commit
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+
+# Runtime state
+data/
+*.sqlite3
+*.log
+
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+venv/
+dist/
+build/
+.coverage
+coverage.xml
+htmlcov/
+.mypy_cache/
+.ruff_cache/
+.pytest_cache/
+
+# Reverse-engineering artifacts (never publish the APK)
+*.apk
+*.xapk
+*.har
+*.mitm
+bundle.js
+flows.mitm
+webtu.py
+reserve_day.py
+
+# OS / editors
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/

@@ -1,0 +1,25 @@
+[Unit]
+Description=webetu-resto daily ONOU meal reservations
+Documentation=https://github.com/YOUR-ACCOUNT/webetu-resto
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=webetu
+Group=webetu
+WorkingDirectory=/opt/webetu-resto
+EnvironmentFile=/opt/webetu-resto/.env
+ExecStart=/opt/webetu-resto/.venv/bin/webtu daemon
+Restart=on-failure
+RestartSec=5
+
+# The process only needs to write its state file.
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=strict
+ProtectHome=true
+ReadWritePaths=/opt/webetu-resto/data
+
+[Install]
+WantedBy=multi-user.target

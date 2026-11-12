@@ -1,0 +1,74 @@
+name: Bug report
+description: Something is broken (never include credentials or tokens)
+title: "[bug] "
+labels: ["bug"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for the report. **Do not paste your `.env`, matricule, password,
+        JWT or screenshots of your account.** Redact ids and
+        names. For a security issue, use the private advisory flow instead.
+
+  - type: textarea
+    id: what-happened
+    attributes:
+      label: What happened?
+      description: A clear description, including the exact command.
+      placeholder: "I ran `webtu status` and got ..."
+    validations:
+      required: true
+
+  - type: textarea
+    id: expected
+    attributes:
+      label: What did you expect?
+    validations:
+      required: true
+
+  - type: textarea
+    id: logs
+    attributes:
+      label: Redacted logs
+      description: Remove tokens, ids, names and URLs containing query strings.
+      render: shell
+    validations:
+      required: false
+
+  - type: dropdown
+    id: install
+    attributes:
+      label: Installation
+      options:
+        - Docker Compose
+        - pip / pipx / uv
+        - systemd
+        - other
+    validations:
+      required: true
+
+  - type: input
+    id: version
+    attributes:
+      label: Version
+      description: Output of `webtu version` or the image tag.
+    validations:
+      required: true
+
+  - type: input
+    id: python
+    attributes:
+      label: Python / OS
+      placeholder: "Python 3.12.4 on Debian 12"
+    validations:
+      required: false
+
+  - type: checkboxes
+    id: checks
+    attributes:
+      label: Checklist
+      options:
+        - label: I removed every credential, token and personal identifier from this report.
+          required: true
+        - label: I searched existing issues before opening this one.
+          required: true
