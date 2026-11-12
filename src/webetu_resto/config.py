@@ -53,6 +53,8 @@ class Settings(BaseSettings):
     webetu_timezone: str = "Africa/Algiers"
     webetu_run_at: str = "00:05"
     webetu_book_days: str = "1,2,3"
+    # Auto-check: re-run the idempotent pass every N minutes (0 disables).
+    webetu_check_interval_minutes: int = 60
     webetu_meals: str = "1,2,3"
 
     # Runtime -------------------------------------------------------------
@@ -69,6 +71,13 @@ class Settings(BaseSettings):
         if not _RUN_AT_RE.match(value.strip()):
             raise ValueError("WEBETU_RUN_AT must look like HH:MM (00:00 to 23:59)")
         return value.strip()
+
+    @field_validator("webetu_check_interval_minutes")
+    @classmethod
+    def _validate_check_interval(cls, value: int) -> int:
+        if value < 0 or value > 24 * 60:
+            raise ValueError("WEBETU_CHECK_INTERVAL_MINUTES must be between 0 and 1440")
+        return value
 
     @field_validator("webetu_log_level")
     @classmethod

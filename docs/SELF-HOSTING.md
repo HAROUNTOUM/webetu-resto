@@ -118,6 +118,7 @@ second pass on the same day books nothing new.
 | `WEBETU_TIMEZONE` | `Africa/Algiers` | IANA timezone |
 | `WEBETU_RUN_AT` | `00:05` | daily run time (`HH:MM`) |
 | `WEBETU_BOOK_DAYS` | `1,2,3` | rolling window (1–3 only) |
+| `WEBETU_CHECK_INTERVAL_MINUTES` | `60` | auto-check: re-run the idempotent pass to fill gaps (0 = off) |
 | `WEBETU_MEALS` | `1,2,3` | 1 breakfast, 2 lunch, 3 dinner |
 | `WEBETU_STATE_PATH` | `./data/state.json` | runtime state |
 | `WEBETU_DRY_RUN` | `false` | plan without booking |

@@ -8,6 +8,9 @@ All notable changes to this project are documented here. The format follows
 
 ### Added
 
+- Daemon auto-check: re-runs the idempotent pass every
+  `WEBETU_CHECK_INTERVAL_MINUTES` (default 60) and retries failed passes with
+  backoff (`WEBETU_MAX_RETRIES`, `WEBETU_RETRY_DELAY`).
 - First-connection prompt: any command asks for matricule and password when
   `.env` has no credentials (interactive terminal only).
 - Resto requests are retried (freshly signed) on intermittent 401/403.

@@ -77,7 +77,8 @@ Task Scheduler (Windows).
 
 See [`.env.example`](.env.example). Main variables: `WEBETU_USERNAME`,
 `WEBETU_PASSWORD`, `WEBETU_RESTO_ID`,
-`WEBETU_RUN_AT`, `WEBETU_BOOK_DAYS`, `WEBETU_MEALS`.
+`WEBETU_RUN_AT`, `WEBETU_BOOK_DAYS`, `WEBETU_MEALS`,
+`WEBETU_CHECK_INTERVAL_MINUTES` (auto-check, default 60, 0 disables).
 
 ## Security
 

@@ -109,6 +109,7 @@ Toutes les options sont dans `.env` (voir [`.env.example`](.env.example)).
 | `WEBETU_RESTO_ID` | auto | `idDepot` du restaurant |
 | `WEBETU_RUN_AT` | `00:05` | heure du passage quotidien |
 | `WEBETU_BOOK_DAYS` | `1,2,3` | fenêtre glissante |
+| `WEBETU_CHECK_INTERVAL_MINUTES` | `60` | vérification auto : relance le passage idempotent pour combler les trous (0 = off) |
 | `WEBETU_MEALS` | `1,2,3` | 1=petit-déj, 2=déjeuner, 3=dîner |
 | `WEBETU_TIMEZONE` | `Africa/Algiers` | fuseau horaire |
 | `WEBETU_DRY_RUN` | `false` | simuler sans réserver |
