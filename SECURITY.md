@@ -3,19 +3,16 @@
 ## What this project handles
 
 - Your Webetu **matricule and password** (used to obtain a short-lived JWT).
-- Your **Telegram bot token** and numeric user id.
 - A local **state file** with your meal preferences and the date of the last run.
 - Short-lived JWTs held in memory only.
 
 It does **not** collect telemetry, analytics, crash reports or usage data, and it
-does not talk to any server other than the Webetu/ONOU endpoints and the
-Telegram Bot API.
+does not talk to any server other than the Webetu/ONOU endpoints.
 
 ## Self-hosted by design
 
 There is no public multi-user instance. You run the process yourself, so you are
-the only person who holds your credentials. The bot refuses every Telegram
-update whose sender id is not `TELEGRAM_OWNER_ID`.
+the only person who holds your credentials.
 
 ## Protecting your secrets
 
@@ -31,9 +28,8 @@ update whose sender id is not `TELEGRAM_OWNER_ID`.
 2. Never paste `.env`, a JWT, a QR code or a screenshot containing your token
    into an issue, a chat or a pull request.
 
-3. Use a dedicated Telegram bot for this tool. If the token leaks, revoke it
-   with [@BotFather](https://t.me/BotFather) (`/revoke`) and write the new one
-   with `webtu setup --telegram`.
+3. Do not reuse your Webetu password on other services. If it leaks, change it
+   in the Webetu app and run `webtu setup` again.
 
 4. Run the Docker container as a non-root user (the provided image already uses
    uid 1000) and keep the host patched.
@@ -43,18 +39,16 @@ update whose sender id is not `TELEGRAM_OWNER_ID`.
 
 ## Logging
 
-The client never logs request bodies, query strings, passwords, JWTs or the
-Telegram token. Errors include only the HTTP method, the endpoint path and a
+The client never logs request bodies, query strings, passwords, JWTs or tokens. Errors include only the HTTP method, the endpoint path and a
 server message. If you add logging while contributing, keep that rule.
 
 ## Reporting a vulnerability
 
 Please **do not open a public issue** for a vulnerability that could expose
-credentials or allow someone else to control another user's bot.
+credentials or allow someone else to act on another user's account.
 
 Use GitHub's private vulnerability reporting:
-**Security → Advisories → Report a vulnerability** on the repository, or email
-the maintainer listed in `pyproject.toml`.
+**Security → Advisories → Report a vulnerability** on the repository.
 
 Include:
 
@@ -70,7 +64,6 @@ project, so no bounty is offered.
 In scope:
 
 - credential or token leakage in logs, errors, state or Docker layers;
-- authentication bypass in the Telegram owner check;
 - command injection, path traversal or unsafe file writes;
 - dependency vulnerabilities with a realistic exploit path.
 
@@ -84,7 +77,6 @@ Out of scope:
 ## If you exposed a secret by accident
 
 1. Change your Webetu password immediately.
-2. Revoke the Telegram bot token and create a new one.
-3. Remove the secret from the current files and from Git history
+2. Remove the secret from the current files and from Git history
    (`git filter-repo`), then force-push the cleaned history.
-4. Assume the secret is compromised even if the commit was short-lived.
+3. Assume the secret is compromised even if the commit was short-lived.
