@@ -7,11 +7,11 @@ small changes, clear tests, no unnecessary dependencies.
 
 - **Never commit real credentials, JWTs, tokens, APKs or decompiled bundles.**
   Tests must use synthetic values. A pull request that contains a real
-  matricule, password or Telegram token will be rejected and the secret must be
+  matricule, password or token will be rejected and the secret must be
   rotated.
 - Be kind. See [`CODE_OF_CONDUCT.md`](CODE_OF_CONDUCT.md).
 - Keep the API layer isolated in `src/webetu_resto/client.py`. Booking logic,
-  formatting and the bot should not know raw endpoint shapes.
+  formatting and the CLI should not know raw endpoint shapes.
 - Respect the service. No account creation, quota bypass, parallel account
   farming or aggressive request rates.
 
@@ -41,7 +41,7 @@ pytest --cov
 ```
 
 CI runs the same commands on Python 3.11, 3.12 and 3.13. Coverage must stay at
-or above 80% for the core modules (the CLI, scheduler and bot entry point are
+or above 80% for the core modules (the CLI and scheduler are
 excluded because they are mostly wiring).
 
 ## What to test
@@ -51,7 +51,7 @@ excluded because they are mostly wiring).
 - New API behaviour: add a `respx` route and assert the exact payload and
   signature. Do not call the live API in tests; the `live` marker exists for
   optional manual smoke tests.
-- Telegram handlers: keep network calls in `asyncio.to_thread`; do not block the
+- Scheduler jobs: keep network calls in `asyncio.to_thread`; do not block the
   event loop.
 
 ## Commit style

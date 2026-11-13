@@ -151,7 +151,7 @@ repository private: public workflow logs are visible to everyone.
 | `WEBETU_BOOK_DAYS` | `1,2,3` | rolling window (1–3 only) |
 | `WEBETU_CHECK_INTERVAL_MINUTES` | `60` | auto-check: re-run the idempotent pass to fill gaps (0 = off) |
 | `WEBETU_MEALS` | `1,2,3` | 1 breakfast, 2 lunch, 3 dinner |
-| `WEBETU_STATE_PATH` | `./data/state.json` | runtime state |
+| `WEBETU_STATE_PATH` | `<config folder>/state.json` | runtime state (`/data/state.json` in Docker) |
 | `WEBETU_DRY_RUN` | `false` | plan without booking |
 | `WEBETU_MAX_RETRIES` | `2` | retries after a failed pass |
 | `WEBETU_RETRY_DELAY` | `20` | base retry delay, seconds |

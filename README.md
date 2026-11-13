@@ -32,7 +32,13 @@ aujourd'hui        demain        +2            +3
 ```
 
 Un passage quotidien est plus fiable qu'un passage « tous les 3 jours » : il rattrape
-les oublis, les redémarrages et les réservations annulées.
+les oublis, les redémarrages et les réservations annulées. Le `daemon` relance aussi le
+passage (idempotent) toutes les 60 minutes (`WEBETU_CHECK_INTERVAL_MINUTES`) pour combler
+les trous, et réessaie après un échec.
+
+**Sans machine allumée en permanence :** un workflow GitHub Actions planifié
+([`.github/workflows/reserve.yml`](.github/workflows/reserve.yml), voir
+[`docs/SELF-HOSTING.md`](docs/SELF-HOSTING.md), option D) peut faire le passage à ta place.
 
 ## Démarrage rapide (Docker, recommandé)
 
@@ -116,7 +122,8 @@ quotidien sans Docker, garde `webtu daemon` ouvert, ou programme `webtu reserve 
 
 ## Configuration
 
-Toutes les options sont dans `.env` (voir [`.env.example`](.env.example)).
+Toutes les options sont dans le fichier de configuration (`.env`, voir
+[`.env.example`](.env.example) ; `webtu debug-config` indique le fichier utilisé).
 
 | Variable | Défaut | Rôle |
 |---|---|---|
@@ -129,11 +136,12 @@ Toutes les options sont dans `.env` (voir [`.env.example`](.env.example)).
 | `WEBETU_MEALS` | `1,2,3` | 1=petit-déj, 2=déjeuner, 3=dîner |
 | `WEBETU_TIMEZONE` | `Africa/Algiers` | fuseau horaire |
 | `WEBETU_DRY_RUN` | `false` | simuler sans réserver |
-| `WEBETU_STATE_PATH` | `./data/state.json` | préférences et historique |
+| `WEBETU_STATE_PATH` | `<dossier de config>/state.json` | état et historique (`/data/state.json` sous Docker) |
+| `WEBETU_ENV_FILE` | — | chemin explicite du fichier de configuration |
 
 ## Sécurité
 
-- `.env` est ignoré par Git et protégé en `600`.
+- `.env` est ignoré par Git et protégé en `600` (Linux/macOS ; sous Windows, il reste dans ton profil utilisateur).
 - Aucun mot de passe, JWT ou token n'est journalisé.
 - Le modèle **self-host** signifie que tu es le seul dépositaire de tes identifiants.
 - Ne partage jamais ton `.env` et ne publie pas de capture avec tes identifiants.

@@ -22,7 +22,13 @@
 
 The app offers a rolling **3-day window** (tomorrow, +2, +3). A **daily 00:05**
 Africa/Algiers run fills that window, so tomorrow's breakfast is always more than
-24 h away and the "reserve 24 h before" rule is respected.
+24 h away and the "reserve 24 h before" rule is respected. The `daemon` also re-runs the
+(idempotent) pass every 60 minutes (`WEBETU_CHECK_INTERVAL_MINUTES`) to fill gaps, and
+retries after a failure.
+
+**No always-on machine?** A scheduled GitHub Actions workflow
+([`.github/workflows/reserve.yml`](.github/workflows/reserve.yml), see
+[`docs/SELF-HOSTING.md`](docs/SELF-HOSTING.md), option D) can run the booking for you.
 
 ## Quick start (Docker)
 
@@ -74,14 +80,15 @@ folder (`~/.config/webetu-resto/.env` on Linux), so `webtu` works from any direc
 ## Configuration
 
 See [`.env.example`](.env.example). Main variables: `WEBETU_USERNAME`,
-`WEBETU_PASSWORD`, `WEBETU_RESTO_ID`,
-`WEBETU_RUN_AT`, `WEBETU_BOOK_DAYS`, `WEBETU_MEALS`,
-`WEBETU_CHECK_INTERVAL_MINUTES` (auto-check, default 60, 0 disables).
+`WEBETU_PASSWORD`, `WEBETU_RESTO_ID`, `WEBETU_RUN_AT`, `WEBETU_BOOK_DAYS`,
+`WEBETU_MEALS`, `WEBETU_CHECK_INTERVAL_MINUTES` (auto-check, default 60, 0 disables),
+`WEBETU_ENV_FILE` (explicit config file) and `WEBETU_STATE_PATH` (default:
+`state.json` next to your config; `/data/state.json` in Docker).
 
 ## Security
 
-`.env` ignored by Git and chmod 600, no credentials in logs,
-self-hosted by design.
+`.env` ignored by Git and chmod 600 (Linux/macOS; on Windows it stays in your user
+profile), no credentials in logs, self-hosted by design.
 
 ## Development
 
