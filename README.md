@@ -36,67 +36,83 @@ les oublis, les redémarrages et les réservations annulées.
 
 ## Démarrage rapide (Docker, recommandé)
 
-### 1. Installer
+Prérequis : Docker avec le plugin Compose (`docker compose version`). Rien d'autre à
+installer : l'image contient Python et toutes les dépendances.
 
 ```bash
 git clone https://github.com/HAROUNTOUM/webetu-resto.git
 cd webetu-resto
-docker compose run --rm webetu setup
-docker compose up -d
+./scripts/docker-setup.sh
 ```
 
-`setup` demande ton matricule et ton mot de passe Webetu, vérifie la connexion,
-détecte ton restaurant et écrit `.env` (permissions `600`). L'état est conservé dans
-le volume Docker `webetu-resto-state` ; les logs et les sauvegardes sont dans
-[`docs/SELF-HOSTING.md`](docs/SELF-HOSTING.md).
+Le script vérifie Docker, construit l'image, te demande ton **matricule**, ton **mot de
+passe** et ton **restaurant**, puis démarre le passage quotidien. Sans le script :
 
-### 2. Utiliser
+```bash
+docker compose build
+docker compose run --rm webetu setup     # crée la configuration
+docker compose up -d                     # lance le passage quotidien
+```
+
+Ta configuration (`.env`) et l'état sont créés **dans le volume Docker**
+`webetu-resto-state` (`/data`). Aucun fichier n'est à créer sur ta machine, et le mot de
+passe n'apparaît pas dans `docker inspect`.
+
+### Utiliser
 
 | Commande | Effet |
 |---|---|
-| `webtu setup` | saisir matricule, mot de passe, restaurant |
-| `webtu test` | vérifier la connexion (aucune réservation) |
-| `webtu status` | réservations des 3 prochains jours |
-| `webtu reserve --dry-run` | simuler sans réserver |
-| `webtu reserve` | réserver les repas manquants |
-| `webtu cancel <id>` | annuler une réservation |
-| `webtu daemon` | passage quotidien automatique à 00:05 |
+| `docker compose logs -f webetu` | suivre les logs |
+| `docker compose run --rm webetu status` | réservations des 3 prochains jours |
+| `docker compose run --rm webetu reserve --dry-run` | simuler sans réserver |
+| `docker compose run --rm webetu setup` | changer matricule, mot de passe ou restaurant |
+| `docker compose down` | arrêter (la configuration est conservée) |
 
-Si `.env` ne contient pas encore tes identifiants, n'importe quelle commande te les
-demande à la première connexion (terminal interactif).
+## Installer `webtu` comme commande du terminal
 
-## Installation sans Docker
+Python 3.11 ou plus récent est nécessaire. Le script crée un environnement virtuel dédié
+(rien n'est installé dans le Python du système) et ajoute la commande `webtu`.
+
+**Linux / macOS**
 
 ```bash
 git clone https://github.com/HAROUNTOUM/webetu-resto.git
 cd webetu-resto
-python3 -m venv .venv
-.venv/bin/pip install .
-.venv/bin/webtu setup
-.venv/bin/webtu test
-.venv/bin/webtu status
-.venv/bin/webtu daemon
+./scripts/install.sh
+webtu setup
+```
+
+**Windows (PowerShell)**
+
+```powershell
+git clone https://github.com/HAROUNTOUM/webetu-resto.git
+cd webetu-resto
+powershell -ExecutionPolicy Bypass -File scripts\install.ps1
+webtu setup
+```
+
+Désinstaller : `./scripts/install.sh --uninstall` (ou `-Uninstall` sous Windows).
+Alternatives : `pipx install .` ou `uv tool install .` depuis le dossier du projet.
+
+La configuration est lue dans cet ordre : `WEBETU_ENV_FILE`, puis `.env` dans le dossier
+courant, puis le dossier de configuration de ton système
+(`~/.config/webetu-resto/.env` sous Linux). `webtu` fonctionne donc depuis n'importe quel
+dossier ; `webtu debug-config` affiche le fichier utilisé.
+
+Ensuite :
+
+```bash
+webtu test
+webtu status
+webtu daemon          # passage quotidien, à laisser tourner
 ```
 
 Ou avec systemd : voir [`deploy/webetu-resto.service`](deploy/webetu-resto.service)
 et le guide complet [`docs/SELF-HOSTING.md`](docs/SELF-HOSTING.md).
 
-### Windows, macOS, Linux
-
-Le CLI est du Python pur (3.11+) et tourne sur les trois systèmes ; la CI le teste
-sur Ubuntu, macOS et Windows.
-
-```bash
-pip install .            # ou : pipx install .
-webtu setup
-```
-
-Sous Windows (PowerShell), avec un venv : `python -m venv .venv`, puis
-`.venv\Scripts\pip install .` et `.venv\Scripts\webtu setup`.
-
-Pour le passage quotidien sans Docker : `webtu daemon` (laisser tourner), ou le
-planificateur du système qui lance `webtu reserve --yes` à 00:05 — cron (Linux),
-launchd (macOS) ou Planificateur de tâches (Windows).
+Le CLI est du Python pur : la CI le teste sur Ubuntu, macOS et Windows. Pour un passage
+quotidien sans Docker, garde `webtu daemon` ouvert, ou programme `webtu reserve --yes` à
+00:05 avec cron (Linux), launchd (macOS) ou le Planificateur de tâches (Windows).
 
 ## Configuration
 

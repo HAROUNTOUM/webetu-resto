@@ -12,10 +12,12 @@ from webetu_resto.models import Depot, Reservation
 
 
 @pytest.fixture(autouse=True)
-def _clean_environment(monkeypatch: pytest.MonkeyPatch) -> None:
+def _clean_environment(monkeypatch: pytest.MonkeyPatch, tmp_path_factory) -> None:
     for key in list(os.environ):
         if key.startswith(("WEBETU_", "TELEGRAM_")):
             monkeypatch.delenv(key, raising=False)
+    # Never touch the developer's real config directory from a test.
+    monkeypatch.setenv("WEBETU_CONFIG_DIR", str(tmp_path_factory.mktemp("config")))
 
 
 @pytest.fixture

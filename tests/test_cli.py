@@ -101,6 +101,7 @@ def test_ensure_credentials_prompts_on_first_connection(monkeypatch, tmp_path) -
 
 def test_run_setup_writes_env_after_verifying_login(monkeypatch, tmp_path) -> None:
     monkeypatch.chdir(tmp_path)
+    monkeypatch.setenv("WEBETU_ENV_FILE", str(tmp_path / ".env"))
 
     class FakeDepot:
         id = 68
@@ -157,3 +158,46 @@ def test_configure_stdio_sets_utf8(monkeypatch) -> None:
     monkeypatch.setattr(cli.sys, "stderr", Stream())
     cli._configure_stdio()
     assert seen == {"encoding": "utf-8", "errors": "replace"}
+
+
+def test_run_setup_creates_the_config_directory(monkeypatch, tmp_path) -> None:
+    target = tmp_path / "fresh" / "config" / ".env"
+    monkeypatch.setenv("WEBETU_ENV_FILE", str(target))
+    monkeypatch.setattr(cli, "WebetuClient", _SetupFakeClient)
+    answers = iter(["2022001", "pw"])
+    monkeypatch.setattr(cli.typer, "prompt", lambda *a, **k: next(answers))
+    cli._run_setup(Settings(_env_file=None))
+    assert "WEBETU_USERNAME=2022001" in target.read_text()
+
+
+def test_debug_config_shows_env_file_location(monkeypatch, tmp_path) -> None:
+    monkeypatch.setenv("WEBETU_ENV_FILE", str(tmp_path / "missing.env"))
+    result = runner.invoke(app, ["debug-config"])
+    assert result.exit_code == 0
+    assert "missing.env" in result.stdout
+    assert "env_file_exists" in result.stdout
+    assert "password" not in result.stdout.lower()
+
+
+class _SetupFakeDepot:
+    id = 68
+    label = "RU 68"
+    is_ru = True
+
+
+class _SetupFakeClient:
+    def __init__(self, username: str, password: str, **_: object) -> None:
+        pass
+
+    def login(self) -> None: ...
+
+    def load_student_context(self) -> object:
+        return type("Ctx", (), {"residence_name": "Résidence"})()
+
+    def ensure_resto_session(self) -> str:
+        return "t"
+
+    def get_depots(self) -> list[_SetupFakeDepot]:
+        return [_SetupFakeDepot()]
+
+    def close(self) -> None: ...

@@ -26,6 +26,7 @@ from .formatting import (
 )
 from .log import configure_logging
 from .meals import parse_meals
+from .paths import resolve_env_file
 from .runner import fetch_snapshot, options_from_settings, run_with_prefs
 from .state import StateStore
 
@@ -102,6 +103,7 @@ def _env_quote(value: str) -> str:
 
 def _write_env(path: Path, values: dict[str, str]) -> None:
     """Merge values into .env, preserving comments and unrelated keys."""
+    path.parent.mkdir(parents=True, exist_ok=True)
     lines = path.read_text(encoding="utf-8").splitlines() if path.exists() else []
     remaining = dict(values)
     output: list[str] = []
@@ -181,7 +183,7 @@ def _run_setup(current: Settings, *, change_resto: bool = False) -> None:
         f"{context.residence_name or 'résidence inconnue'} — {depot.label}"
     )
 
-    env_path = Path(".env")
+    env_path = resolve_env_file()
     _write_env(
         env_path,
         {
@@ -190,7 +192,7 @@ def _run_setup(current: Settings, *, change_resto: bool = False) -> None:
             "WEBETU_RESTO_ID": str(depot.id),
         },
     )
-    console.print(f"[green]Configuration écrite dans {env_path} (chmod 600).[/green]")
+    console.print(f"[green]Configuration écrite dans {env_path} (accès réservé à toi).[/green]")
 
 
 def _is_interactive() -> bool:
@@ -447,7 +449,13 @@ def debug_config() -> None:
     """Affiche la configuration sans aucun secret."""
     try:
         settings = _load_settings()
-        console.print_json(json.dumps(settings.describe(), ensure_ascii=False))
+        env_file = resolve_env_file()
+        payload = {
+            **settings.describe(),
+            "env_file": str(env_file),
+            "env_file_exists": env_file.is_file(),
+        }
+        console.print_json(json.dumps(payload, ensure_ascii=False))
     except WebetuError as exc:
         console.print(f"[red]Erreur :[/red] {exc}")
         raise typer.Exit(1) from exc

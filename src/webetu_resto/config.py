@@ -11,6 +11,7 @@ from pydantic_settings import BaseSettings, SettingsConfigDict
 
 from .errors import ConfigError
 from .meals import parse_meals
+from .paths import default_state_path, resolve_env_file
 from .signing import DEFAULT_HMAC_SECRET
 
 _RUN_AT_RE = re.compile(r"^(?P<hour>[01]?\d|2[0-3]):(?P<minute>[0-5]\d)$")
@@ -33,7 +34,7 @@ def parse_days(value: str) -> list[int]:
 
 class Settings(BaseSettings):
     model_config = SettingsConfigDict(
-        env_file=".env",
+        env_file=resolve_env_file(),
         env_file_encoding="utf-8",
         extra="ignore",
         case_sensitive=False,
@@ -59,7 +60,7 @@ class Settings(BaseSettings):
     webetu_meals: str = "1,2,3"
 
     # Runtime -------------------------------------------------------------
-    webetu_state_path: Path = Path("data/state.json")
+    webetu_state_path: Path = default_state_path()
     webetu_dry_run: bool = False
     webetu_max_retries: int = 2
     webetu_retry_delay: int = 20
@@ -130,7 +131,8 @@ class Settings(BaseSettings):
     def require_credentials(self) -> None:
         if not self.webetu_username.strip() or not self.password:
             raise ConfigError(
-                "WEBETU_USERNAME and WEBETU_PASSWORD are required. Run `webtu setup`."
+                "WEBETU_USERNAME and WEBETU_PASSWORD are required. Run `webtu setup` "
+                f"(config file: {resolve_env_file()})."
             )
 
     def describe(self) -> dict[str, object]:

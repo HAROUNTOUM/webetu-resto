@@ -17,17 +17,30 @@ or installation.
 ```bash
 git clone https://github.com/HAROUNTOUM/webetu-resto.git
 cd webetu-resto
+./scripts/docker-setup.sh        # build + setup + start, with Docker checks
+```
+
+or step by step:
+
+```bash
+docker compose build
 docker compose run --rm webetu setup
 docker compose up -d
 docker compose logs -f webetu
 ```
 
 `setup` verifies the login, the student context, the resto session and the
-restaurant **before** writing `.env`. It asks for your matricule and password
-(hidden input). The file is mounted read-write into the
-container, so it stays on the host with permissions `600`. Credentials are not
-passed through the container environment, so `docker inspect` does not show
-them.
+restaurant **before** writing the config. It asks for your matricule and
+password (hidden input). The config file is created **inside the `/data`
+volume** (`/data/.env`, mode `600`), so no file has to exist on the host and
+there is no uid/permission problem. Credentials are not passed through the
+container environment, so `docker inspect` does not show them.
+
+To read or edit it:
+
+```bash
+docker run --rm -v webetu-resto-state:/data alpine cat /data/.env
+```
 
 ### What runs
 
@@ -36,8 +49,8 @@ them.
   (00:05 by default);
 - a catch-up run starts 10 seconds after boot when today's pass is missing or
   failed;
-- state is stored in the named volume `webetu-resto-state`, at
-  `/data/state.json`.
+- config and state are stored in the named volume `webetu-resto-state`, at
+  `/data/.env` and `/data/state.json`.
 
 ### Day-to-day commands
 
@@ -80,7 +93,7 @@ sudo -u webetu git clone https://github.com/HAROUNTOUM/webetu-resto.git /opt/web
 cd /opt/webetu-resto
 sudo -u webetu python3 -m venv .venv
 sudo -u webetu .venv/bin/pip install .
-sudo -u webetu .venv/bin/webtu setup
+sudo -u webetu env WEBETU_ENV_FILE=/opt/webetu-resto/.env .venv/bin/webtu setup
 sudo install -m 644 deploy/webetu-resto.service /etc/systemd/system/
 sudo systemctl daemon-reload
 sudo systemctl enable --now webetu-resto
@@ -93,7 +106,7 @@ The provided unit assumes:
 - the service user is `webetu`;
 - only `/opt/webetu-resto/data` needs to be writable.
 
-Adapt `User`, `WorkingDirectory`, `EnvironmentFile` and `ReadWritePaths` if your
+Adapt `User`, `WorkingDirectory`, the `Environment=` paths and `ReadWritePaths` if your
 paths differ. The unit runs `webtu daemon`; the output goes to the journal.
 
 ## Option C — cron instead of the built-in scheduler

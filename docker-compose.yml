@@ -1,3 +1,9 @@
+# First run:   docker compose run --rm webetu setup     (matricule, password, restaurant)
+# Then:        docker compose up -d
+#
+# Credentials and state are stored in the named volume below (/data/.env and
+# /data/state.json): no file has to exist on the host, and they never appear in
+# `docker inspect`.
 services:
   webetu:
     build: .
@@ -6,17 +12,12 @@ services:
     restart: unless-stopped
     init: true
     environment:
-      # Persisted in the named volume below, not in the image.
-      WEBETU_STATE_PATH: /data/state.json
       TZ: Africa/Algiers
     volumes:
-      # The app reads /app/.env directly. Keeping credentials in a mounted file
-      # (instead of `env_file`) avoids exposing them in `docker inspect`.
-      - ./.env:/app/.env
-      - webetu-state:/data
+      - webetu-data:/data
     command: ["daemon"]
     stop_grace_period: 10s
 
 volumes:
-  webetu-state:
+  webetu-data:
     name: webetu-resto-state

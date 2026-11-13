@@ -16,6 +16,11 @@ All notable changes to this project are documented here. The format follows
   `.env` has no credentials (interactive terminal only).
 - Resto requests are retried (freshly signed) on intermittent 401/403.
 
+- Docker: multi-stage image, configuration and state stored in the `/data` volume
+  (no host `.env` needed), `scripts/docker-setup.sh` one-shot setup.
+- `scripts/install.sh` / `install.ps1` install `webtu` as a terminal command; the
+  config is found in the per-user config directory from any folder.
+
 ### Removed
 
 - Telegram bot and its `webtu bot` command, to be re-added as a separate project.

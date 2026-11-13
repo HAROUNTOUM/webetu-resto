@@ -9,7 +9,9 @@ Type=simple
 User=webetu
 Group=webetu
 WorkingDirectory=/opt/webetu-resto
-EnvironmentFile=/opt/webetu-resto/.env
+# The app reads its own config file and keeps its state next to it.
+Environment=WEBETU_ENV_FILE=/opt/webetu-resto/.env
+Environment=WEBETU_STATE_PATH=/opt/webetu-resto/data/state.json
 ExecStart=/opt/webetu-resto/.venv/bin/webtu daemon
 Restart=on-failure
 RestartSec=5

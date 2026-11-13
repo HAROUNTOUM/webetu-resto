@@ -26,52 +26,50 @@ Africa/Algiers run fills that window, so tomorrow's breakfast is always more tha
 
 ## Quick start (Docker)
 
-```bash
-git clone https://github.com/HAROUNTOUM/webetu-resto.git
-cd webetu-resto
-docker compose run --rm webetu setup
-docker compose up -d
-```
-
-`setup` asks for your matricule and password, verifies them, detects your
-restaurant and writes `.env` (mode `600`). If `.env` has no credentials yet, any
-command prompts for them on first connection (interactive terminal).
-
-### Commands
-
-`setup`, `test`, `status`, `reserve [--dry-run]`, `cancel <id>`, `daemon`.
-
-## Without Docker
+Requires Docker with the Compose plugin. Nothing else to install: the image bundles
+Python and every dependency.
 
 ```bash
 git clone https://github.com/HAROUNTOUM/webetu-resto.git
 cd webetu-resto
-python3 -m venv .venv
-.venv/bin/pip install .
-.venv/bin/webtu setup
-.venv/bin/webtu test
-.venv/bin/webtu daemon
+./scripts/docker-setup.sh
 ```
 
-See [`deploy/webetu-resto.service`](deploy/webetu-resto.service) for systemd and
-[`docs/SELF-HOSTING.md`](docs/SELF-HOSTING.md) for the full guide.
-
-### Windows, macOS, Linux
-
-The CLI is pure Python (3.11+) and runs on all three systems; CI tests it on
-Ubuntu, macOS and Windows.
+The script checks Docker, builds the image, asks for your matricule, password and
+restaurant, then starts the daily daemon. Manually:
 
 ```bash
-pip install .            # or: pipx install .
-webtu setup
+docker compose build
+docker compose run --rm webetu setup     # creates the configuration
+docker compose up -d                     # starts the daily daemon
 ```
 
-On Windows (PowerShell) with a venv: `python -m venv .venv`, then
-`.venv\Scripts\pip install .` and `.venv\Scripts\webtu setup`.
+The configuration (`.env`) and state are created **inside the Docker volume**
+`webetu-resto-state` (`/data`): no file to create on the host, and nothing in
+`docker inspect`. Useful: `docker compose logs -f webetu`,
+`docker compose run --rm webetu status`, `docker compose down`.
 
-For the daily run without Docker: keep `webtu daemon` running, or let the OS
-scheduler run `webtu reserve --yes` at 00:05 — cron (Linux), launchd (macOS) or
-Task Scheduler (Windows).
+## Install `webtu` as a terminal command
+
+Needs Python 3.11+. The script creates a dedicated virtual environment (the system Python
+is untouched) and adds a `webtu` command.
+
+```bash
+# Linux / macOS
+./scripts/install.sh && webtu setup
+```
+```powershell
+# Windows (PowerShell)
+powershell -ExecutionPolicy Bypass -File scripts\install.ps1; webtu setup
+```
+
+Uninstall with `./scripts/install.sh --uninstall` (`-Uninstall` on Windows). Alternatives:
+`pipx install .` or `uv tool install .` from the project folder.
+
+Configuration is read from `WEBETU_ENV_FILE`, then `./.env`, then the per-user config
+folder (`~/.config/webetu-resto/.env` on Linux), so `webtu` works from any directory.
+`webtu debug-config` prints the file in use. Commands: `setup`, `test`, `status`,
+`reserve [--dry-run]`, `cancel <id>`, `daemon`.
 
 ## Configuration
 
