@@ -53,6 +53,11 @@ dev = [
   "mypy>=1.11",
 ]
 
+[project.urls]
+Homepage = "https://github.com/HAROUNTOUM/webetu-resto"
+Issues = "https://github.com/HAROUNTOUM/webetu-resto/issues"
+Changelog = "https://github.com/HAROUNTOUM/webetu-resto/blob/main/CHANGELOG.md"
+
 [project.scripts]
 webtu = "webetu_resto.cli:app"
 
