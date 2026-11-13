@@ -63,6 +63,14 @@ def test_write_env_creates_file(tmp_path: Path) -> None:
     assert "ne jamais committer" in path.read_text()
 
 
+def test_env_directory_gives_clear_error(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+    monkeypatch.chdir(tmp_path)
+    (tmp_path / ".env").mkdir()
+    result = runner.invoke(app, ["test"])
+    assert result.exit_code == 1
+    assert "est un dossier" in result.stdout
+
+
 def test_bot_command_is_gone() -> None:
     result = runner.invoke(app, ["bot"])
     assert result.exit_code != 0
