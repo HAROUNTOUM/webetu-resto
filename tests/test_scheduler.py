@@ -38,7 +38,7 @@ async def test_build_scheduler_adds_daily_and_catch_up(tmp_path) -> None:
         ids = {job.id for job in scheduler.get_jobs()}
     finally:
         scheduler.shutdown(wait=False)
-    assert ids == {"daily-booking", "auto-check", "catch-up"}
+    assert ids == {"daily-booking", "catch-up"}
 
 
 async def test_build_scheduler_skips_catch_up_after_success(tmp_path) -> None:
@@ -52,7 +52,7 @@ async def test_build_scheduler_skips_catch_up_after_success(tmp_path) -> None:
         ids = {job.id for job in scheduler.get_jobs()}
     finally:
         scheduler.shutdown(wait=False)
-    assert ids == {"daily-booking", "auto-check"}
+    assert ids == {"daily-booking"}
 
 
 async def test_build_scheduler_catches_up_after_failure(tmp_path) -> None:
@@ -90,6 +90,9 @@ class FakeScheduler:
 
     def add_job(self, func: object, trigger: object, **kwargs: object) -> None:
         self.jobs.append({"func": func, "trigger": trigger, **kwargs})
+
+    def get_job(self, job_id: str) -> None:
+        return None
 
 
 def _item() -> BookingItem:
@@ -182,3 +185,16 @@ async def test_retry_budget_is_capped(tmp_path, monkeypatch) -> None:
     for _ in range(5):
         await service.run()
     assert len(scheduler.jobs) == 2  # webetu_max_retries == 2
+
+
+async def test_default_settings_run_once_a_day_only(tmp_path) -> None:
+    assert Settings(_env_file=None).webetu_check_interval_minutes == 0
+
+
+async def test_service_logs_the_next_planned_run(tmp_path, monkeypatch, caplog) -> None:
+    service, _, _ = _service(tmp_path, monkeypatch, _report(skipped=[_item()]))
+    service.next_run = lambda: datetime(2026, 11, 15, 0, 5)  # type: ignore[method-assign]
+    with caplog.at_level("INFO", logger="webetu_resto.scheduler"):
+        await service.run()
+    assert "prochain passage" in caplog.text
+    assert "2026-11-15 00:05" in caplog.text

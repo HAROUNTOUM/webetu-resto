@@ -55,8 +55,9 @@ class Settings(BaseSettings):
     webetu_timezone: str = "Africa/Algiers"
     webetu_run_at: str = "00:05"
     webetu_book_days: str = "1,2,3"
-    # Auto-check: re-run the idempotent pass every N minutes (0 disables).
-    webetu_check_interval_minutes: int = 60
+    # Optional extra check: re-run the idempotent pass every N minutes.
+    # 0 (default) = once a day only, at WEBETU_RUN_AT.
+    webetu_check_interval_minutes: int = 0
     webetu_meals: str = "1,2,3"
 
     # Runtime -------------------------------------------------------------

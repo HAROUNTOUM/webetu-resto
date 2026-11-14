@@ -130,7 +130,7 @@ off for days.
 2. In *Settings → Secrets and variables → Actions*, add the secrets
    `WEBETU_USERNAME`, `WEBETU_PASSWORD` and `WEBETU_RESTO_ID`.
 3. The workflow [`.github/workflows/reserve.yml`](../.github/workflows/reserve.yml)
-   runs at 00:05 and 06:05 Algiers time. Without the secrets it is skipped.
+   runs once a day at 00:05 Algiers time. Without the secrets it is skipped.
 4. Test it once: *Actions → Daily reservation → Run workflow* (tick `dry_run` to
    simulate). A failed run emails you.
 
@@ -149,7 +149,7 @@ repository private: public workflow logs are visible to everyone.
 | `WEBETU_TIMEZONE` | `Africa/Algiers` | IANA timezone |
 | `WEBETU_RUN_AT` | `00:05` | daily run time (`HH:MM`) |
 | `WEBETU_BOOK_DAYS` | `1,2,3` | rolling window (1–3 only) |
-| `WEBETU_CHECK_INTERVAL_MINUTES` | `60` | auto-check: re-run the idempotent pass to fill gaps (0 = off) |
+| `WEBETU_CHECK_INTERVAL_MINUTES` | `0` | optional extra check every N minutes (0 = once a day only) |
 | `WEBETU_MEALS` | `1,2,3` | 1 breakfast, 2 lunch, 3 dinner |
 | `WEBETU_STATE_PATH` | `<config folder>/state.json` | runtime state (`/data/state.json` in Docker) |
 | `WEBETU_DRY_RUN` | `false` | plan without booking |
