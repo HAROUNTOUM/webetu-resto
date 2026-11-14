@@ -54,7 +54,7 @@ mot de passe au navigateur. Sous Windows, un interrupteur « Démarrer avec Wind
 toute seule à chaque ouverture de session.
 
 Les versions publiées contiennent aussi un programme Windows (`webetu-resto.exe`) à
-double-cliquer : pas besoin d'installer Python ni Docker.
+double-cliquer : pas besoin d'installer Python ni Docker. Voir [`docs/WINDOWS.md`](docs/WINDOWS.md).
 
 ## Démarrage rapide (Docker, recommandé)
 

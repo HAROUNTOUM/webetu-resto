@@ -1,0 +1,79 @@
+name: Release (Windows program)
+
+# Builds webetu-resto.exe, checks that it really starts, and (when you push a
+# tag such as v0.2.0) publishes it on the Releases page.
+#
+# To try a build WITHOUT publishing: Actions tab -> "Release (Windows program)"
+# -> "Run workflow". The exe is then available as a downloadable artifact.
+
+on:
+  push:
+    tags: ["v*"]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  windows:
+    name: Build webetu-resto.exe
+    runs-on: windows-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+          cache-dependency-path: pyproject.toml
+
+      - name: Write build info
+        run: python packaging/write_build_info.py
+
+      - name: Install
+        run: |
+          python -m pip install --upgrade pip
+          pip install . "pyinstaller>=6.10,<7"
+
+      - name: Build the program
+        shell: bash
+        run: >-
+          pyinstaller --noconfirm --clean --onefile --noconsole
+          --name webetu-resto
+          --collect-all apscheduler --copy-metadata apscheduler
+          --collect-all tzdata --collect-all rich
+          packaging/entry.py
+
+      - name: Self-test the built program
+        shell: pwsh
+        run: |
+          $process = Start-Process -FilePath "dist\webetu-resto.exe" -ArgumentList "selftest","--output","selftest.txt" -Wait -PassThru
+          if (-not (Test-Path selftest.txt)) { throw "The program produced no self-test result." }
+          Get-Content selftest.txt
+          if ($process.ExitCode -ne 0) { throw "Self-test failed (exit code $($process.ExitCode))." }
+
+      - name: Checksum
+        shell: bash
+        run: |
+          cd dist
+          sha256sum webetu-resto.exe > webetu-resto.exe.sha256
+          cat webetu-resto.exe.sha256
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: webetu-resto-windows
+          path: |
+            dist/webetu-resto.exe
+            dist/webetu-resto.exe.sha256
+          retention-days: 14
+
+      - name: Publish release
+        if: startsWith(github.ref, 'refs/tags/v')
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+          TAG: ${{ github.ref_name }}
+        run: |
+          gh release create "$TAG" dist/webetu-resto.exe dist/webetu-resto.exe.sha256 \
+            --title "$TAG" --generate-notes
