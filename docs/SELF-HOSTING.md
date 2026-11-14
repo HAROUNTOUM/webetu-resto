@@ -123,6 +123,8 @@ second pass on the same day books nothing new.
 
 ## Option D — GitHub Actions (no computer needed)
 
+> Step-by-step guide for students (French + Arabic): [GITHUB-ACTIONS.md](GITHUB-ACTIONS.md).
+
 Run the booking on GitHub's servers so it works even when your own machine is
 off for days.
 

@@ -37,8 +37,8 @@ passage (idempotent) toutes les 3 heures (`WEBETU_CHECK_INTERVAL_MINUTES`) pour 
 les trous, et réessaie après un échec.
 
 **Sans machine allumée en permanence :** un workflow GitHub Actions planifié
-([`.github/workflows/reserve.yml`](.github/workflows/reserve.yml), voir
-[`docs/SELF-HOSTING.md`](docs/SELF-HOSTING.md), option D) peut faire le passage à ta place.
+([`.github/workflows/reserve.yml`](.github/workflows/reserve.yml), guide pas à pas :
+[`docs/GITHUB-ACTIONS.md`](docs/GITHUB-ACTIONS.md)) peut faire le passage à ta place.
 
 ## Interface web locale (le plus simple)
 
