@@ -80,7 +80,20 @@ class DaemonService:
     def _day_key(self) -> str:
         return datetime.now(self.settings.timezone).date().isoformat()
 
+    def next_run(self) -> datetime | None:
+        """When the next daily pass is planned (None before the scheduler starts)."""
+        if self.scheduler is None:
+            return None
+        job = self.scheduler.get_job("daily-booking")
+        return getattr(job, "next_run_time", None)
+
     async def run(self) -> None:
+        await self._run_once()
+        upcoming = self.next_run()
+        if upcoming is not None:
+            logger.info("prochain passage prévu: %s", upcoming.strftime("%Y-%m-%d %H:%M"))
+
+    async def _run_once(self) -> None:
         if not self.store.load().prefs.auto:
             logger.info("mode automatique désactivé, passage ignoré")
             return

@@ -5,13 +5,12 @@ name: Daily reservation
 # below (Settings -> Secrets and variables -> Actions). Without the secrets the
 # job is skipped, so a public copy stays harmless.
 #
-# Algiers is UTC+1 all year, so 23:05 UTC = 00:05 Algiers. The second entry is a
-# few hours later and only fills gaps (the pass never books twice).
+# Algiers is UTC+1 all year, so 23:05 UTC = 00:05 Algiers. One run a day is enough:
+# the booking window moves forward once a day. GitHub may start it a little late.
 
 on:
   schedule:
     - cron: "5 23 * * *"
-    - cron: "5 5 * * *"
   workflow_dispatch:
     inputs:
       dry_run:

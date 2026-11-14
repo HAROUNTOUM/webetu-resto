@@ -32,9 +32,10 @@ aujourd'hui        demain        +2            +3
 ```
 
 Un passage quotidien est plus fiable qu'un passage « tous les 3 jours » : il rattrape
-les oublis, les redémarrages et les réservations annulées. Le `daemon` relance aussi le
-passage (idempotent) toutes les 60 minutes (`WEBETU_CHECK_INTERVAL_MINUTES`) pour combler
-les trous, et réessaie après un échec.
+les oublis, les redémarrages et les réservations annulées. Le `daemon` ne tourne qu'**une fois par jour**, à l'heure prévue (`WEBETU_RUN_AT`), puis
+attend le passage suivant (il écrit « prochain passage prévu » dans ses logs) ; il
+réessaie seulement après un échec. Une vérification supplémentaire est possible avec
+`WEBETU_CHECK_INTERVAL_MINUTES` (désactivée par défaut).
 
 **Sans machine allumée en permanence :** un workflow GitHub Actions planifié
 ([`.github/workflows/reserve.yml`](.github/workflows/reserve.yml), voir
@@ -132,7 +133,7 @@ Toutes les options sont dans le fichier de configuration (`.env`, voir
 | `WEBETU_RESTO_ID` | auto | `idDepot` du restaurant |
 | `WEBETU_RUN_AT` | `00:05` | heure du passage quotidien |
 | `WEBETU_BOOK_DAYS` | `1,2,3` | fenêtre glissante |
-| `WEBETU_CHECK_INTERVAL_MINUTES` | `60` | vérification auto : relance le passage idempotent pour combler les trous (0 = off) |
+| `WEBETU_CHECK_INTERVAL_MINUTES` | `0` | vérification supplémentaire optionnelle, toutes les N minutes (0 = un seul passage par jour) |
 | `WEBETU_MEALS` | `1,2,3` | 1=petit-déj, 2=déjeuner, 3=dîner |
 | `WEBETU_TIMEZONE` | `Africa/Algiers` | fuseau horaire |
 | `WEBETU_DRY_RUN` | `false` | simuler sans réserver |
