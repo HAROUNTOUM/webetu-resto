@@ -40,3 +40,6 @@ reserve_day.py
 Thumbs.db
 .idea/
 .vscode/
+
+# PyInstaller
+*.spec
