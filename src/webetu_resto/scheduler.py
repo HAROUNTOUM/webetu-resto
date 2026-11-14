@@ -33,7 +33,7 @@ def build_scheduler(settings: Settings, store: StateStore, job: Job) -> AsyncIOS
     hour, minute = settings.run_at_parts
     scheduler.add_job(
         job,
-        CronTrigger(hour=hour, minute=minute, timezone=timezone),
+        CronTrigger(hour=hour, minute=minute, timezone=timezone, jitter=300),
         id="daily-booking",
         replace_existing=True,
         coalesce=True,
@@ -45,7 +45,7 @@ def build_scheduler(settings: Settings, store: StateStore, job: Job) -> AsyncIOS
     if interval > 0:
         scheduler.add_job(
             job,
-            IntervalTrigger(minutes=interval, timezone=timezone),
+            IntervalTrigger(minutes=interval, timezone=timezone, jitter=120),
             id="auto-check",
             replace_existing=True,
             coalesce=True,

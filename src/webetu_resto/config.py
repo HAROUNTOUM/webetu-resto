@@ -56,7 +56,7 @@ class Settings(BaseSettings):
     webetu_run_at: str = "00:05"
     webetu_book_days: str = "1,2,3"
     # Auto-check: re-run the idempotent pass every N minutes (0 disables).
-    webetu_check_interval_minutes: int = 60
+    webetu_check_interval_minutes: int = 180
     webetu_meals: str = "1,2,3"
 
     # Runtime -------------------------------------------------------------
