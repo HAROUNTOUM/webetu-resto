@@ -5,7 +5,6 @@ from __future__ import annotations
 import json
 import sys
 from datetime import date, datetime
-from pathlib import Path
 from typing import Any
 
 import typer
@@ -26,6 +25,7 @@ from .formatting import (
 )
 from .log import configure_logging
 from .meals import parse_meals
+from .onboarding import env_quote, save_config, verify_and_resolve, write_env
 from .paths import resolve_env_file
 from .runner import fetch_snapshot, options_from_settings, run_with_prefs
 from .state import StateStore
@@ -87,42 +87,16 @@ def _client(settings: Settings) -> WebetuClient:
     )
 
 
+# Kept under their old names: the existing tests import them from this module.
+_env_quote = env_quote
+_write_env = write_env
+
+
 def _parse_date(value: str) -> date:
     try:
         return date.fromisoformat(value)
     except ValueError as exc:
         raise ConfigError(f"date invalide: {value!r} (format AAAA-MM-JJ)") from exc
-
-
-def _env_quote(value: str) -> str:
-    if any(character in value for character in " #'\"\t"):
-        escaped = value.replace("\\", "\\\\").replace('"', '\\"')
-        return f'"{escaped}"'
-    return value
-
-
-def _write_env(path: Path, values: dict[str, str]) -> None:
-    """Merge values into .env, preserving comments and unrelated keys."""
-    path.parent.mkdir(parents=True, exist_ok=True)
-    lines = path.read_text(encoding="utf-8").splitlines() if path.exists() else []
-    remaining = dict(values)
-    output: list[str] = []
-    for line in lines:
-        stripped = line.strip()
-        if stripped and not stripped.startswith("#") and "=" in stripped:
-            key = stripped.split("=", 1)[0].strip()
-            if key in remaining:
-                output.append(f"{key}={_env_quote(remaining.pop(key))}")
-                continue
-        output.append(line)
-    if output and output[-1].strip():
-        output.append("")
-    if not path.exists():
-        output.append("# Généré par `webtu setup` — ne jamais committer ce fichier.")
-    for key, value in remaining.items():
-        output.append(f"{key}={_env_quote(value)}")
-    path.write_text("\n".join(output).rstrip() + "\n", encoding="utf-8")
-    path.chmod(0o600)
 
 
 def _choose_depot(settings: Settings, depots: list[Any], *, force: bool = False) -> Any:
@@ -159,21 +133,9 @@ def _run_setup(current: Settings, *, change_resto: bool = False) -> None:
         raise ConfigError("le mot de passe est obligatoire")
 
     console.print("[dim]Vérification des identifiants…[/dim]")
-    probe = WebetuClient(
-        username,
-        password,
-        progres_base=current.webetu_progres_base,
-        resto_base=current.webetu_resto_base,
-        hmac_secret=current.hmac_secret,
-        request_interval=current.webetu_request_interval,
-    )
-    try:
-        probe.login()
-        context = probe.load_student_context()
-        probe.ensure_resto_session()
-        depots = probe.get_depots()
-    finally:
-        probe.close()
+    verified = verify_and_resolve(username, password, current, client_factory=WebetuClient)
+    context = verified.context
+    depots = verified.depots
 
     if not depots:
         raise ConfigError("aucun restaurant renvoyé par l'API")
@@ -184,14 +146,7 @@ def _run_setup(current: Settings, *, change_resto: bool = False) -> None:
     )
 
     env_path = resolve_env_file()
-    _write_env(
-        env_path,
-        {
-            "WEBETU_USERNAME": username,
-            "WEBETU_PASSWORD": password,
-            "WEBETU_RESTO_ID": str(depot.id),
-        },
-    )
+    save_config(env_path, username, password, depot.id)
     console.print(f"[green]Configuration écrite dans {env_path} (accès réservé à toi).[/green]")
 
 
