@@ -108,6 +108,8 @@ omit = [
   "*/webetu_resto/__main__.py",
   "*/webetu_resto/cli.py",
   "*/webetu_resto/scheduler.py",
+  "*/webetu_resto/ui_backend.py",
+  "*/webetu_resto/selftest.py",
 ]
 
 [tool.coverage.report]

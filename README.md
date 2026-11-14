@@ -33,12 +33,28 @@ aujourd'hui        demain        +2            +3
 
 Un passage quotidien est plus fiable qu'un passage « tous les 3 jours » : il rattrape
 les oublis, les redémarrages et les réservations annulées. Le `daemon` relance aussi le
-passage (idempotent) toutes les 60 minutes (`WEBETU_CHECK_INTERVAL_MINUTES`) pour combler
+passage (idempotent) toutes les 3 heures (`WEBETU_CHECK_INTERVAL_MINUTES`) pour combler
 les trous, et réessaie après un échec.
 
 **Sans machine allumée en permanence :** un workflow GitHub Actions planifié
 ([`.github/workflows/reserve.yml`](.github/workflows/reserve.yml), voir
 [`docs/SELF-HOSTING.md`](docs/SELF-HOSTING.md), option D) peut faire le passage à ta place.
+
+## Interface web locale (le plus simple)
+
+```bash
+webtu ui
+```
+
+Une page s'ouvre dans ton navigateur : tu saisis ton **matricule** et ton **mot de passe**,
+tu choisis ton restaurant, et c'est tout. La page affiche ensuite tes 3 prochains jours
+(petit-déjeuner, déjeuner, dîner) et la réservation automatique tourne tant que le programme
+est ouvert. L'interface n'écoute que sur ton ordinateur (`127.0.0.1`) et ne renvoie jamais ton
+mot de passe au navigateur. Sous Windows, un interrupteur « Démarrer avec Windows » la lance
+toute seule à chaque ouverture de session.
+
+Les versions publiées contiennent aussi un programme Windows (`webetu-resto.exe`) à
+double-cliquer : pas besoin d'installer Python ni Docker.
 
 ## Démarrage rapide (Docker, recommandé)
 
@@ -132,7 +148,7 @@ Toutes les options sont dans le fichier de configuration (`.env`, voir
 | `WEBETU_RESTO_ID` | auto | `idDepot` du restaurant |
 | `WEBETU_RUN_AT` | `00:05` | heure du passage quotidien |
 | `WEBETU_BOOK_DAYS` | `1,2,3` | fenêtre glissante |
-| `WEBETU_CHECK_INTERVAL_MINUTES` | `60` | vérification auto : relance le passage idempotent pour combler les trous (0 = off) |
+| `WEBETU_CHECK_INTERVAL_MINUTES` | `180` | vérification auto : relance le passage idempotent pour combler les trous (0 = off) |
 | `WEBETU_MEALS` | `1,2,3` | 1=petit-déj, 2=déjeuner, 3=dîner |
 | `WEBETU_TIMEZONE` | `Africa/Algiers` | fuseau horaire |
 | `WEBETU_DRY_RUN` | `false` | simuler sans réserver |

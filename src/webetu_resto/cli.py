@@ -394,6 +394,42 @@ def daemon() -> None:
 
 
 @app.command()
+def ui(
+    port: int = typer.Option(8765, "--port", help="Port local de l'interface."),
+    no_browser: bool = typer.Option(False, "--no-browser", help="Ne pas ouvrir le navigateur."),
+) -> None:
+    """Ouvre l'interface web locale (matricule, mot de passe, suivi)."""
+    try:
+        try:
+            _configure_logging(_load_settings())
+        except WebetuError:
+            configure_logging("INFO")
+        from .ui_backend import run_ui
+
+        run_ui(port=port, open_browser=not no_browser)
+    except WebetuError as exc:
+        console.print(f"[red]Erreur :[/red] {exc}")
+        raise typer.Exit(1) from exc
+
+
+@app.command(hidden=True)
+def selftest(
+    output: str | None = typer.Option(None, "--output", help="Écrit le résultat dans ce fichier."),
+) -> None:
+    """Vérification interne utilisée à la fabrication du programme Windows."""
+    from .selftest import run_selftest
+
+    problems = run_selftest()
+    message = "OK" if not problems else "ÉCHEC\n" + "\n".join(problems)
+    if output:
+        with open(output, "w", encoding="utf-8") as handle:
+            handle.write(message + "\n")
+    console.print(message)
+    if problems:
+        raise typer.Exit(1)
+
+
+@app.command()
 def version() -> None:
     """Affiche la version."""
     console.print(f"webetu-resto {__version__}")
