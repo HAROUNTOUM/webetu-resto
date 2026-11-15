@@ -24,6 +24,23 @@ def target_dates(today: date, offsets: Iterable[int]) -> list[date]:
     return sorted({today + timedelta(days=offset) for offset in offsets})
 
 
+def validate_booking_days(today: date, days: Iterable[date]) -> None:
+    """Reject dates outside the server-enforced D+1..D+3 window.
+
+    The server refuses anything later than three days in advance even when the
+    request contains many ``details`` entries, so fail before the network call
+    with a message the user can act on.
+    """
+    allowed = {today + timedelta(days=offset) for offset in (1, 2, 3)}
+    invalid = sorted({day for day in days if day not in allowed})
+    if invalid:
+        listing = ", ".join(day.isoformat() for day in invalid)
+        raise ConfigError(
+            f"date(s) hors de la fenêtre autorisée : {listing}. "
+            "Le serveur n'accepte que D+1, D+2 et D+3."
+        )
+
+
 def resolve_depot(depots: Sequence[Depot], wanted_id: int | None) -> Depot:
     """Pick the configured restaurant, or auto-detect when unambiguous."""
     if wanted_id is not None:

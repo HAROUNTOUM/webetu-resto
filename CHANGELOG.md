@@ -22,6 +22,13 @@ All notable changes to this project are documented here. The format follows
 - `scripts/install.sh` / `install.ps1` install `webtu` as a terminal command; the
   config is found in the per-user config directory from any folder.
 
+### Fixed
+
+- Reject out-of-window `--date` values locally before calling the API. A live
+  90-detail probe (2026-11-15) confirmed the server refuses anything beyond
+  D+3 (`لا يمكن الحجز لأكثر من 3 أيام مقدما`), so month-wide booking is not
+  possible even in one request.
+
 ### Removed
 
 - Telegram bot and its `webtu bot` command, to be re-added as a separate project.

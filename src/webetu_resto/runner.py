@@ -9,7 +9,13 @@ from datetime import UTC, date, datetime, tzinfo
 from typing import Any
 from zoneinfo import ZoneInfo
 
-from .booking import apply_results, plan_reservations, resolve_depot, target_dates
+from .booking import (
+    apply_results,
+    plan_reservations,
+    resolve_depot,
+    target_dates,
+    validate_booking_days,
+)
 from .client import PROGRES_BASE, RESTO_BASE, WebetuClient
 from .models import Depot, Reservation, RunReport, StudentContext
 from .signing import DEFAULT_HMAC_SECRET
@@ -96,6 +102,7 @@ def run_once(options: RunOptions, *, factory: ClientFactory = WebetuClient) -> R
         if options.target_days
         else target_dates(today, options.book_days)
     )
+    validate_booking_days(today, days)
 
     report = RunReport(started_at=started_at, dates=days, dry_run=options.dry_run)
     client = _build_client(options, factory)

@@ -153,6 +153,11 @@ Toutes les options sont dans le fichier de configuration (`.env`, voir
 La fenêtre est glissante : si tu rates un passage, il manque des repas. Un passage
 quotidien idempotent comble les trous.
 
+**Peut-on réserver tout le mois d'un coup ?**
+Non. Le serveur refuse toute date au-delà de D+3, même dans une seule requête
+avec 90 détails (testé le 15/11/2026 : aucun repas créé). Le passage quotidien
+est donc la seule façon de couvrir le mois sans trou.
+
 **Et si le daemon redémarre ?**
 Au démarrage, il vérifie le dernier passage et rattrape immédiatement si nécessaire.
 

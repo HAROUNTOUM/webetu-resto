@@ -170,6 +170,15 @@ def test_fetch_snapshot(depot: Depot, existing: list[Reservation]) -> None:
     assert created[0].closed
 
 
+def test_run_once_rejects_an_out_of_window_target(depot: Depot) -> None:
+    factory, created = _factory([depot])
+
+    with pytest.raises(ConfigError, match=r"D\+1"):
+        run_once(_options(target_days=[date(2026, 11, 16)]), factory=factory)
+
+    assert created == []
+
+
 def test_run_with_prefs_uses_overrides_and_records_state(
     settings, monkeypatch: pytest.MonkeyPatch, tmp_path
 ) -> None:

@@ -4,7 +4,13 @@ from datetime import date
 
 import pytest
 
-from webetu_resto.booking import apply_results, plan_reservations, resolve_depot, target_dates
+from webetu_resto.booking import (
+    apply_results,
+    plan_reservations,
+    resolve_depot,
+    target_dates,
+    validate_booking_days,
+)
 from webetu_resto.errors import ConfigError
 from webetu_resto.models import BookingItem, BookingResult, Depot, Reservation
 
@@ -16,6 +22,21 @@ def test_target_dates_sorted_unique() -> None:
         date(2026, 11, 14),
         date(2026, 11, 15),
     ]
+
+
+def test_validate_booking_days_accepts_the_three_day_window() -> None:
+    today = date(2026, 11, 12)
+    validate_booking_days(today, [date(2026, 11, 13), date(2026, 11, 15)])
+
+
+def test_validate_booking_days_rejects_a_fourth_day() -> None:
+    with pytest.raises(ConfigError, match=r"D\+1"):
+        validate_booking_days(date(2026, 11, 12), [date(2026, 11, 16)])
+
+
+def test_validate_booking_days_rejects_today() -> None:
+    with pytest.raises(ConfigError, match=r"2026-11-12"):
+        validate_booking_days(date(2026, 11, 12), [date(2026, 11, 12)])
 
 
 def test_resolve_depot_explicit(depots: list[Depot]) -> None:

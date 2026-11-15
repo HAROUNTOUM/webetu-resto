@@ -31,6 +31,12 @@ with `WEBETU_CHECK_INTERVAL_MINUTES` (off by default).
 ([`.github/workflows/reserve.yml`](.github/workflows/reserve.yml), see
 [`docs/SELF-HOSTING.md`](docs/SELF-HOSTING.md), option D) can run the booking for you.
 
+## Can it book the whole month in one go?
+
+No. The server rejects any date beyond D+3, even in a single request containing
+90 details (tested 2026-11-15: zero reservations created). The daily pass is the
+only way to cover the month without gaps.
+
 ## Quick start (Docker)
 
 Requires Docker with the Compose plugin. Nothing else to install: the image bundles

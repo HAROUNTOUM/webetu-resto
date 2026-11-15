@@ -298,6 +298,19 @@ and sent. Re-serializing with different spacing would break the signature.
 - A reserved meal can only be consumed in the restaurant where it was booked.
 - `candelete` indicates whether a reservation can still be cancelled.
 
+The window is **server-side**, not just a limit of the mobile UI. On
+2026-11-15 one request containing 90 `details` entries (3 meals × 30 days,
+D+4..D+33) was rejected item by item with:
+
+```
+لا يمكن الحجز لأكثر من 3 أيام مقدما
+```
+
+("cannot book more than 3 days in advance"), followed by a final
+`لا توجد حجوزات صالحة` summary. **Zero reservations were created.** A larger
+`details` list therefore cannot book a whole month in one click; the tool also
+rejects such dates locally before sending the request.
+
 The tool runs **every day at 00:05 Africa/Algiers** and books D+1..D+3
 idempotently. Running only every three days leaves gaps when a run fails; the
 daily idempotent pass is deliberate.
