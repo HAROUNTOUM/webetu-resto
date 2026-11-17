@@ -60,7 +60,7 @@ jobs:
           sha256sum webetu-resto.exe > webetu-resto.exe.sha256
           cat webetu-resto.exe.sha256
 
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v7
         with:
           name: webetu-resto-windows
           path: |
