@@ -123,6 +123,8 @@ second pass on the same day books nothing new.
 
 ## Option D — GitHub Actions (no computer needed)
 
+> Step-by-step guide for students (French + Arabic): [GITHUB-ACTIONS.md](GITHUB-ACTIONS.md).
+
 Run the booking on GitHub's servers so it works even when your own machine is
 off for days.
 
@@ -149,7 +151,7 @@ repository private: public workflow logs are visible to everyone.
 | `WEBETU_TIMEZONE` | `Africa/Algiers` | IANA timezone |
 | `WEBETU_RUN_AT` | `00:05` | daily run time (`HH:MM`) |
 | `WEBETU_BOOK_DAYS` | `1,2,3` | rolling window (1–3 only) |
-| `WEBETU_CHECK_INTERVAL_MINUTES` | `0` | optional extra check every N minutes (0 = once a day only) |
+| `WEBETU_CHECK_INTERVAL_MINUTES` | `0` | optional extra check every N minutes (0 = once a day only; 180 = every 3 hours) |
 | `WEBETU_MEALS` | `1,2,3` | 1 breakfast, 2 lunch, 3 dinner |
 | `WEBETU_STATE_PATH` | `<config folder>/state.json` | runtime state (`/data/state.json` in Docker) |
 | `WEBETU_DRY_RUN` | `false` | plan without booking |
