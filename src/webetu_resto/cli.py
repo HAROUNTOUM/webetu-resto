@@ -5,6 +5,7 @@ from __future__ import annotations
 import json
 import sys
 from datetime import date, datetime
+from pathlib import Path
 from typing import Any
 
 import typer
@@ -55,6 +56,12 @@ def _main() -> None:
 
 
 def _load_settings() -> Settings:
+    if Path(".env").is_dir():
+        # Docker creates a directory when a bind-mounted file is missing on the host.
+        raise ConfigError(
+            ".env est un dossier, pas un fichier (créé par Docker car le fichier "
+            "manquait). Supprime-le puis crée le fichier : cp .env.example .env"
+        )
     try:
         return Settings()
     except ValidationError as exc:
